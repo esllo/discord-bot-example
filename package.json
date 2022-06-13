@@ -1,13 +1,14 @@
 {
-  "name": "parkmalchi",
+  "name": "discordbot-example",
   "version": "1.0.0",
-  "description": "ParkMalchi - discord bot ",
+  "description": "discord bot example with discordjs",
   "main": "index.js",
   "author": "esllo",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "ts-node src/index"
+    "start": "ts-node src/index",
+    "build": "tsc"
   },
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
