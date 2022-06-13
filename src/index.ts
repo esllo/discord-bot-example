@@ -3,7 +3,7 @@ import music from './modules/music';
 import together from './modules/together';
 import listeners from './listeners';
 
-const BOT_TOKEN = "";
+const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
 const intents = new Intents(0b111111111111111);
 const client = new Client({ intents });
