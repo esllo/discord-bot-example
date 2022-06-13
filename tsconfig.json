@@ -13,21 +13,13 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    // "isolatedModules": true,
-    "noEmit": true,
+    "rootDir": ".",
     "target": "esnext",
-    "outDir": "./dist",
+    "outDir": "./dist/",
     "typeRoots": [
       "node_modules/@types"
-    ],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
     ],
   },
   "ts-node": {
