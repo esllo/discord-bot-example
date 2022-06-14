@@ -1,6 +1,6 @@
 import { AudioPlayer, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { DiscordTogether } from "discord-together";
-import { BaseCommandInteraction, ChatInputApplicationCommandData, Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
+import { BaseCommandInteraction, ButtonInteraction, ChatInputApplicationCommandData, Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
 
 export type Nullable<T> = T | null;
 export type Nullish<T> = T | null | undefined;
@@ -21,7 +21,12 @@ export interface Music {
 }
 
 export interface Command extends ChatInputApplicationCommandData {
+  customIds?: string[];
   execute: (client: CustomClient, interaction: BaseCommandInteraction) => Promise<CommandResult>;
+}
+
+export interface ButtonCommand extends Command {
+  interaction: (client: CustomClient, interaction: ButtonInteraction) => Promise<CommandResult>;
 }
 
 export type CommandResult = string | boolean | undefined | void;
