@@ -1,5 +1,6 @@
-import { Command } from "../types";
+import { ButtonCommand, Command } from "../types";
 import AddRole from "./addrole";
+import Dice from "./dice";
 import Echo from "./echo";
 import Leave from "./leave";
 import Pause from "./pause";
@@ -9,7 +10,7 @@ import Resume from "./resume";
 import Skip from "./skip";
 import Youtube from "./youtube";
 
-const Commands: Command[] = [
+const Commands: (Command | ButtonCommand)[] = [
   Echo,
   Youtube,
   AddRole,
@@ -19,6 +20,7 @@ const Commands: Command[] = [
   Skip,
   Leave,
   Queue,
+  Dice,
 ];
 
 export default Commands;
