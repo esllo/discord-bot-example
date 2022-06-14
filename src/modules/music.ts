@@ -29,8 +29,12 @@ export default (() => {
     });
 
     if (info.length > 0) {
-      const [{ url, title }] = info;
+      const [{ url, title, thumbnails }] = info;
       const member = interaction.member as GuildMember;
+      let image = '';
+      if (thumbnails.length > 0) {
+        image = thumbnails[0].url;
+      }
       for (let i = 0; i < repeat; i++) {
         data.queue.push({
           url,
@@ -45,6 +49,7 @@ export default (() => {
         result: repeat,
         title,
         url,
+        image,
       };
 
     } else {

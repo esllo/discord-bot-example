@@ -24,15 +24,18 @@ const Play: Command = {
         }
 
         if (client.music) {
-          const { result, title, url } = await client.music.addQueue(interaction, query, repeat);
+          const { result, title, url, image } = await client.music.addQueue(interaction, query, repeat);
 
           let messageEmbed = new MessageEmbed();
           if (result > 0) {
-            messageEmbed.setTitle('Successfully queue added!');
+            messageEmbed.setTitle(title);
             messageEmbed.setURL(url);
-            messageEmbed.addField('Song title', title);
+            messageEmbed.setDescription('Successfully queue added!');
             if (repeat > 10) {
-              messageEmbed.setDescription('Maximum queue repeat count is 10');
+              messageEmbed.addField('warn', 'Maximum queue repeat count is 10');
+            }
+            if (image) {
+              messageEmbed.setImage(image);
             }
           }
           await interaction.followUp({
