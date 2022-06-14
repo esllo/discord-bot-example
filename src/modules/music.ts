@@ -1,9 +1,11 @@
-import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus } from "@discordjs/voice";
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, getVoiceConnection, getVoiceConnections, joinVoiceChannel, JoinVoiceChannelOptions, NoSubscriberBehavior, VoiceConnectionStatus } from "@discordjs/voice";
 import { CustomClient, MusicData, QueueResult } from "../types";
 import playdl from 'play-dl';
 import { BaseCommandInteraction, GuildMember } from "discord.js";
 
 export default (() => {
+  let disconnectHandler: any = null;
+
   const data: MusicData = {
     client: null,
     conn: null,
@@ -38,7 +40,7 @@ export default (() => {
       for (let i = 0; i < repeat; i++) {
         data.queue.push({
           url,
-          channelId: member.voice.channel?.id,
+          channelId: member.voice.channel?.id as string,
           guildId: member.guild.id,
           adapterCreator: member.guild.voiceAdapterCreator,
         });
@@ -65,7 +67,7 @@ export default (() => {
     }
   }
 
-  function pauseMusic() {
+  function pauseMusic(): boolean {
     if (data.player && data.player.state.status === AudioPlayerStatus.Playing) {
       data.player.pause();
       return true;
@@ -73,7 +75,7 @@ export default (() => {
     return false;
   }
 
-  function skipMusic() {
+  function skipMusic(): boolean {
     if (data.player && data.player.state.status !== AudioPlayerStatus.Idle) {
       data.player.stop();
       playNext();
@@ -82,7 +84,7 @@ export default (() => {
     return false;
   }
 
-  function resumeMusic() {
+  function resumeMusic(): boolean {
     if (data.player && (data.player.state.status === AudioPlayerStatus.Paused || data.player.state.status === AudioPlayerStatus.AutoPaused)) {
       data.player.unpause();
       return true;
@@ -91,9 +93,17 @@ export default (() => {
   }
 
   async function playMusic() {
+    if (disconnectHandler) {
+      clearTimeout(disconnectHandler);
+      disconnectHandler = null;
+    }
     if (data.queue.length > 0) {
       const [track, ...queue] = data.queue;
       data.queue = queue;
+
+      console.log(track);
+
+      data.lastQueue = track;
 
       const stream = await playdl.stream(track.url);
 
@@ -103,12 +113,14 @@ export default (() => {
 
       data.stream = stream;
 
-      if (!data.conn || data.connChannelId !== track.channelId) {
+      if (!data.conn || data.conn.state.status === VoiceConnectionStatus.Destroyed || data.conn.state.status === VoiceConnectionStatus.Disconnected || data.connChannelId !== track.channelId) {
+        const { url, ...voiceOptions } = track;
         data.conn = joinVoiceChannel({
-          ...track,
+          ...voiceOptions,
           selfDeaf: true,
           selfMute: false,
         });
+
 
         data.conn.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
           try {
@@ -132,9 +144,27 @@ export default (() => {
       }
 
       if (data.player) {
+        data.player.stop();
         data.player.play(data.resource);
       }
+    } else {
+      disconnectHandler = setTimeout(() => {
+        if (data.lastQueue) {
+          destroyConnection(data.lastQueue.guildId);
+        }
+        disconnectHandler = null;
+      }, 5000);
     }
+  }
+
+  function destroyConnection(guildId: string): boolean {
+    const conn = getVoiceConnection(guildId);
+    data.conn = null;
+    if (conn) {
+      conn.destroy();
+      return true;
+    }
+    return false;
   }
 
   data.player.on(AudioPlayerStatus.Idle, playNext);
@@ -146,6 +176,7 @@ export default (() => {
       pauseMusic,
       resumeMusic,
       skipMusic,
+      destroyConnection,
     };
   };
 })();
