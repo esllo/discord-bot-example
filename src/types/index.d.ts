@@ -29,3 +29,9 @@ export interface MusicData {
   stream: YouTubeStream;
   queue: any[];
 }
+
+export interface QueueResult {
+  result: number;
+  title?: string;
+  url?: string;
+}
