@@ -1,6 +1,7 @@
 import { Command } from "../types";
 import AddRole from "./addrole";
 import Echo from "./echo";
+import Leave from "./leave";
 import Pause from "./pause";
 import Play from "./play";
 import Resume from "./resume";
@@ -15,6 +16,7 @@ const Commands: Command[] = [
   Pause,
   Resume,
   Skip,
+  Leave
 ];
 
 export default Commands;
