@@ -1,5 +1,5 @@
 import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus } from "@discordjs/voice";
-import { CustomClient, MusicData } from "../types";
+import { CustomClient, MusicData, QueueResult } from "../types";
 import playdl from 'play-dl';
 import { BaseCommandInteraction, GuildMember } from "discord.js";
 
@@ -18,23 +18,40 @@ export default (() => {
     queue: [],
   };
 
-  async function addQueue(interaction: BaseCommandInteraction, query: string) {
+  async function addQueue(interaction: BaseCommandInteraction, query: string, repeat?: number): Promise<QueueResult> {
+    if (!repeat) {
+      repeat = 1;
+    } else if (repeat > 10) {
+      repeat = 10;
+    }
     const info = await playdl.search(query, {
       limit: 1
     });
 
     if (info.length > 0) {
-      const [{ url }] = info;
+      const [{ url, title }] = info;
       const member = interaction.member as GuildMember;
-      data.queue.push({
-        url,
-        channelId: member.voice.channel?.id,
-        guildId: member.guild.id,
-        adapterCreator: member.guild.voiceAdapterCreator,
-      });
-    }
+      for (let i = 0; i < repeat; i++) {
+        data.queue.push({
+          url,
+          channelId: member.voice.channel?.id,
+          guildId: member.guild.id,
+          adapterCreator: member.guild.voiceAdapterCreator,
+        });
+      }
+      playNext();
 
-    playNext();
+      return {
+        result: repeat,
+        title,
+        url,
+      };
+
+    } else {
+      return {
+        result: -1
+      };
+    }
   }
 
   function playNext() {

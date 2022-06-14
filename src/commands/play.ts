@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, MessageEmbed } from "discord.js";
 import { Command } from "../types";
 
 const Play: Command = {
@@ -8,7 +8,12 @@ const Play: Command = {
   async execute(client, interaction) {
     const member = interaction.member as GuildMember;
     const queryOption = interaction.options.get('query');
+    const repeatOption = interaction.options.get('repeat');
     if (interaction.guild && member.voice && member.voice.channel) {
+      let repeat = 1;
+      if (repeatOption && repeatOption.value) {
+        repeat = repeatOption.value as number;
+      }
       if (queryOption && queryOption.value) {
         let query = queryOption.value as string;
         if (query.includes('watch?v=')) {
@@ -19,15 +24,31 @@ const Play: Command = {
         }
 
         if (client.music) {
-          client.music.addQueue(interaction, query);
-          client.music.playNext();
+          const { result, title, url } = await client.music.addQueue(interaction, query, repeat);
+
+          let messageEmbed = new MessageEmbed();
+          if (result > 0) {
+            messageEmbed.setTitle('Successfully queue added!');
+            messageEmbed.setURL(url);
+            messageEmbed.addField('Song title', title);
+            if (repeat > 10) {
+              messageEmbed.setDescription('Maximum queue repeat count is 10');
+            }
+          }
+          await interaction.followUp({
+            ephemeral: true,
+            embeds: [
+              messageEmbed
+            ]
+          });
+          return;
         }
 
       }
     }
     await interaction.followUp({
       ephemeral: true,
-      content: 'please wait'
+      content: 'something went wrong :('
     });
   },
   options: [
@@ -36,6 +57,11 @@ const Play: Command = {
       description: 'youtube query',
       type: 'STRING',
       required: true
+    },
+    {
+      name: 'repeat',
+      description: 'repeat count',
+      type: 'INTEGER',
     }
   ]
 };
