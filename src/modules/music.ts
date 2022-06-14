@@ -1,4 +1,4 @@
-import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus } from "@discordjs/voice";
 import { CustomClient, MusicData } from "../types";
 import playdl from 'play-dl';
 import { BaseCommandInteraction, GuildMember } from "discord.js";
@@ -86,6 +86,22 @@ export default (() => {
           ...track,
           selfDeaf: true,
           selfMute: false,
+        });
+
+        data.conn.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+          try {
+            if (data.conn) {
+              await Promise.race([
+                entersState(data.conn, VoiceConnectionStatus.Signalling, 5000),
+                entersState(data.conn, VoiceConnectionStatus.Connecting, 5000)
+              ]);
+            } else {
+              data.conn = null;
+            }
+          } catch (e) {
+            data.conn?.destroy();
+            data.conn = null;
+          }
         });
 
         data.connChannelId = track.channelId;
