@@ -40,6 +40,7 @@ export default (() => {
       for (let i = 0; i < repeat; i++) {
         data.queue.push({
           url,
+          title: title || 'no title',
           channelId: member.voice.channel?.id as string,
           guildId: member.guild.id,
           adapterCreator: member.guild.voiceAdapterCreator,
@@ -62,8 +63,14 @@ export default (() => {
   }
 
   function playNext() {
-    if (data.player && data.player.state.status === AudioPlayerStatus.Idle) {
-      playMusic();
+    if (data.player) {
+      if (data.player.state.status === AudioPlayerStatus.AutoPaused) {
+        data.player.stop();
+        playMusic();
+      }
+      if (data.player.state.status === AudioPlayerStatus.Idle) {
+        playMusic();
+      }
     }
   }
 
@@ -101,7 +108,6 @@ export default (() => {
       const [track, ...queue] = data.queue;
       data.queue = queue;
 
-      console.log(track);
 
       data.lastQueue = track;
 
@@ -112,6 +118,7 @@ export default (() => {
       });
 
       data.stream = stream;
+
 
       if (!data.conn || data.conn.state.status === VoiceConnectionStatus.Destroyed || data.conn.state.status === VoiceConnectionStatus.Disconnected || data.connChannelId !== track.channelId) {
         const { url, ...voiceOptions } = track;
@@ -158,8 +165,10 @@ export default (() => {
   }
 
   function destroyConnection(guildId: string): boolean {
+    data.player.stop();
     const conn = getVoiceConnection(guildId);
     data.conn = null;
+    data.connChannelId = '';
     if (conn) {
       conn.destroy();
       return true;
@@ -171,6 +180,7 @@ export default (() => {
 
   return (client: CustomClient): void => {
     client.music = {
+      data,
       addQueue,
       playNext,
       pauseMusic,

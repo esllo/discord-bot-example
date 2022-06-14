@@ -11,6 +11,7 @@ export interface CustomClient extends Client {
 }
 
 export interface Music {
+  data: MusicData;
   addQueue(interaction: BaseCommandInteraction, query: string, repeat?: number): Promise<QueueResult>;
   playNext(): void;
   pauseMusic(): boolean;
@@ -42,6 +43,7 @@ export interface MusicData {
 
 export interface MusicQueue {
   url: string;
+  title: string;
   channelId: string;
   guildId: string;
   adapterCreator: InternalDiscordGatewayAdapterCreator;
