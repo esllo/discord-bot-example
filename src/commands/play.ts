@@ -28,8 +28,8 @@ const Play: Command = {
 
           let messageEmbed = new MessageEmbed();
           if (result > 0) {
-            messageEmbed.setTitle(title);
-            messageEmbed.setURL(url);
+            messageEmbed.setTitle(title || '');
+            messageEmbed.setURL(url || '');
             messageEmbed.setDescription('Successfully queue added!');
             if (repeat > 10) {
               messageEmbed.addField('warn', 'Maximum queue repeat count is 10');
