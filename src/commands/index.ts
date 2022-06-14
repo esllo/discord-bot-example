@@ -4,6 +4,7 @@ import Echo from "./echo";
 import Leave from "./leave";
 import Pause from "./pause";
 import Play from "./play";
+import Queue from "./queue";
 import Resume from "./resume";
 import Skip from "./skip";
 import Youtube from "./youtube";
@@ -16,7 +17,8 @@ const Commands: Command[] = [
   Pause,
   Resume,
   Skip,
-  Leave
+  Leave,
+  Queue,
 ];
 
 export default Commands;
