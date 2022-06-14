@@ -1,13 +1,22 @@
 import { AudioPlayer, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { DiscordTogether } from "discord-together";
-import { BaseCommandInteraction, ChatInputApplicationCommandData, Client } from "discord.js";
+import { BaseCommandInteraction, ChatInputApplicationCommandData, Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
 
 export type Nullable<T> = T | null;
 export type Nullish<T> = T | null | undefined;
 
 export interface CustomClient extends Client {
   together?: DiscordTogether;
-  music?: any;
+  music?: Music;
+}
+
+export interface Music {
+  addQueue(interaction: BaseCommandInteraction, query: string, repeat?: number): Promise<QueueResult>;
+  playNext(): void;
+  pauseMusic(): boolean;
+  resumeMusic(): bolean;
+  skipMusic(): boolean;
+  destroyConnection(guildId: string): boolean;
 }
 
 export interface Command extends ChatInputApplicationCommandData {
@@ -27,7 +36,15 @@ export interface MusicData {
   player: AudioPlayer;
   resource: Nullable<AudioResource>;
   stream: YouTubeStream;
-  queue: any[];
+  queue: MusicQueue[];
+  lastQueue?: MusicQueue;
+}
+
+export interface MusicQueue {
+  url: string;
+  channelId: string;
+  guildId: string;
+  adapterCreator: InternalDiscordGatewayAdapterCreator;
 }
 
 export interface QueueResult {
