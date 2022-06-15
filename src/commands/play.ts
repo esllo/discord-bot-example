@@ -16,12 +16,6 @@ const Play: Command = {
       }
       if (queryOption && queryOption.value) {
         let query = queryOption.value as string;
-        if (query.includes('watch?v=')) {
-          let temp = query.split('watch?v=', 2);
-          if (temp.length === 2) {
-            query = temp[1].split('&')[0];
-          }
-        }
 
         if (client.music) {
           const { result, title, url, image } = await client.music.addQueue(interaction, query, repeat);
