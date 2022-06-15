@@ -1,5 +1,6 @@
 import { ButtonCommand, Command } from "../types";
 import AddRole from "./addrole";
+import Clear from "./clear";
 import Dice from "./dice";
 import Echo from "./echo";
 import Leave from "./leave";
@@ -21,6 +22,7 @@ const Commands: (Command | ButtonCommand)[] = [
   Leave,
   Queue,
   Dice,
+  Clear,
 ];
 
 export default Commands;
