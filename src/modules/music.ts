@@ -31,7 +31,7 @@ export default (() => {
     });
 
     if (info.length > 0) {
-      const [{ url, title, thumbnails }] = info;
+      const [{ url, title, thumbnails, durationRaw: time }] = info;
       const member = interaction.member as GuildMember;
       let image = '';
       if (thumbnails.length > 0) {
@@ -41,6 +41,7 @@ export default (() => {
         data.queue.push({
           url,
           title: title || 'no title',
+          time,
           channelId: member.voice.channel?.id as string,
           guildId: member.guild.id,
           adapterCreator: member.guild.voiceAdapterCreator,

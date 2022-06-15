@@ -11,8 +11,8 @@ const Queue: Command = {
       const embed = new MessageEmbed();
       embed.setTitle(`Playlist | ${queue.length}`);
       if (queue.length > 0) {
-        queue.forEach(({ title }) => {
-          embed.addField(title, '   ');
+        queue.forEach(({ title, time }) => {
+          embed.addField(title, time);
         });
       } else {
         embed.setDescription('no musics');
