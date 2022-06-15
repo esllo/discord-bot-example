@@ -49,6 +49,7 @@ export interface MusicData {
 export interface MusicQueue {
   url: string;
   title: string;
+  time: string;
   channelId: string;
   guildId: string;
   adapterCreator: InternalDiscordGatewayAdapterCreator;
